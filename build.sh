@@ -11,4 +11,4 @@ if ! [ -x "$(command -v docker)" ]; then
   exit 1
 fi
 
-docker compose -f "docker/docker-compose.yml" up -d --build
+docker compose -file "docker/docker-compose.yml" up -d --build
