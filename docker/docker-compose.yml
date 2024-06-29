@@ -1,36 +1,33 @@
-version: "3"
+version: '3'
 
 services:
   app:
     build:
-      context: "jira"
+      context: 'jira'
       args:
-        JIRA_VERSION: ${JIRA_VERSION}
-        IMAGE_PREFIX: ${IMAGE_PREFIX:-''}
-    image: xsharp/jira:${JIRA_VERSION}
+        JIRA_VERSION: 9.4.4
+    image: xsharp/jira:9.4.4
     container_name: jira-app
-    hostname: "jiraapp"
-    working_dir: "/opt/atlassian/jira"
+    hostname: 'jiraapp'
+    working_dir: '/opt/atlassian/jira'
     depends_on:
       - db
     ports:
-      - "8081:8080"
+      - '8081:8080'
     volumes:
       - ../data/jira:/var/atlassian/application-data/jira
     restart: always
-    env_file:
-      - ./.env
     environment:
-      - TZ='Asia/Ho_Chi_Minh'
-      - JVM_MINIMUM_MEMORY=${JVM_MINIMUM_MEMORY}
-      - JVM_MAXIMUM_MEMORY=${JVM_MAXIMUM_MEMORY}
-      - JVM_RESERVED_CODE_CACHE_SIZE=${JVM_RESERVED_CODE_CACHE_SIZE}
+      - TZ: 'Asia/Ho_Chi_Minh'
+      # - JVM_MINIMUM_MEMORY=${JVM_MINIMUM_MEMORY}
+      # - JVM_MAXIMUM_MEMORY=${JVM_MAXIMUM_MEMORY}
+      # - JVM_RESERVED_CODE_CACHE_SIZE=${JVM_RESERVED_CODE_CACHE_SIZE}
 
-      # - ATL_PROXY_NAME=${ATL_PROXY_NAME}
-      # - ATL_PROXY_PORT=${ATL_PROXY_PORT}
-      # - ATL_TOMCAT_SCHEME=${ATL_TOMCAT_SCHEME}
-      # - ATL_TOMCAT_SECURE=${ATL_TOMCAT_SECURE}
-        
+      - ATL_PROXY_NAME: nglamanh.works
+      - ATL_PROXY_PORT: 443
+      - ATL_TOMCAT_SCHEME: https
+      - ATL_TOMCAT_SECURE: true
+
       # - HTTP_PROXY=${HTTP_PROXY}
       # - HTTPS_PROXY=${HTTPS_PROXY}
       # - NO_PROXY=${NO_PROXY}
@@ -38,15 +35,15 @@ services:
       - jira
 
   db:
-    image: mysql:${MYSQL_VERSION}
+    image: mysql:8.0.32
     container_name: jira-mysql
-    hostname: "jiramysql"
+    hostname: 'jiramysql'
     environment:
-      - TZ='Asia/Ho_Chi_Minh'
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
-      - MYSQL_USER=${MYSQL_USER}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - TZ: 'Asia/Ho_Chi_Minh'
+      - MYSQL_ROOT_PASSWORD: 123456
+      - MYSQL_DATABASE: jira
+      - MYSQL_USER: jira
+      - MYSQL_PASSWORD: 123123
     cap_add:
       - SYS_NICE # CAP_SYS_NICE
     command:
@@ -58,7 +55,7 @@ services:
         '--innodb_log_file_size=256M',
         '--max_allowed_packet=256M',
         '--log_bin_trust_function_creators=1',
-        '--skip-log-bin'
+        '--skip-log-bin',
       ]
     volumes:
       - ../data/mysql:/var/lib/mysql
